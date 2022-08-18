@@ -1,6 +1,6 @@
 {
   "name": "three-pro",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "基于Three.js 的三维组件",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
