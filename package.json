@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --config webpack/webpack.dev.config.js --open",
-    "tsc": "tsc -p ./lib && scp -r -q ./lib/Core/imgs ./dist/Core/",
+    "tsc": "tsc -p ./lib && scp -r -q ./lib/Core/assets ./dist/Core/",
     "build": "webpack --config webpack/webpack.prod.config.js",
     "test": "echo 'Error: no test specified' && exit 1"
   },

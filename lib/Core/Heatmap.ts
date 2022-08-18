@@ -15,7 +15,7 @@ import {
   Vector2,
 } from 'three';
 import BaseLayer from './BaseLayer';
-import wordJSON from './imgs/word.json';
+import wordJSON from './assets/word.json';
 import { IHeatmap, IHeatmapInstance } from './interface';
 import LayerType from './LayerType';
 import { projection, setDefaultValue } from './utils';

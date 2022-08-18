@@ -23,15 +23,15 @@ import {
 } from 'three';
 import BaseLayer from './BaseLayer';
 import CONST from './const';
-import cloud_img from './imgs/cloud.jpg';
-import dot_img from './imgs/dot.png';
-import earth_img from './imgs/earth.jpg';
-import earth_1_img from './imgs/earth_1.png';
-import earth_impact from './imgs/impact-512.jpg';
-import earth_blur from './imgs/map_blur.jpg';
-import merge_from_ofoct_img from './imgs/merge_from_ofoct.jpg';
-import popularJSON from './imgs/popular.json';
-import wordJSON from './imgs/word.json';
+import cloud_img from './assets/imgs/cloud.jpg';
+import dot_img from './assets/imgs/dot.png';
+import earth_img from './assets/imgs/earth.jpg';
+import earth_1_img from './assets/imgs/earth_1.png';
+import earth_impact from './assets/imgs/impact-512.jpg';
+import earth_blur from './assets/imgs/map_blur.jpg';
+import merge_from_ofoct_img from './assets/imgs/merge_from_ofoct.jpg';
+import popularJSON from './assets/popular.json';
+import wordJSON from './assets/word.json';
 import { EarthType, IEarth, IEarthInstance } from './interface';
 import LayerType from './LayerType';
 import {

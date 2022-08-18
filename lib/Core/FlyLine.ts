@@ -17,7 +17,7 @@ import {
   Vector3,
 } from 'three';
 import BaseLayer from './BaseLayer';
-import { fragmentShader, vertexShader } from './imgs/fragment';
+import { fragmentShader, vertexShader } from './fragment';
 import { IFlyLine, IFlyLineFeature, IFlyLineInstance } from './interface';
 import LayerType from './LayerType';
 import { cartographicToXYZ, projection, setDefaultValue } from './utils';

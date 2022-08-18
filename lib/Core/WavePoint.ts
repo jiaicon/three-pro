@@ -7,7 +7,7 @@ import {
   Vector3,
 } from 'three';
 import BaseLayer from './BaseLayer';
-import wavePng from './imgs/wave.png';
+import wavePng from './assets/imgs/wave.png';
 import { IWavePoint, IWavePointFeature, IWavePointInstance } from './interface';
 import LayerType from './LayerType';
 import { cartographicToXYZ, projection, setDefaultValue } from './utils';
