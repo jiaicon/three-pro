@@ -26,9 +26,24 @@ const Index = () => {
       scene.current?.add(earth.current);
     })
   }, [])
+  const onChange = () => {
+    earth.current?.changeOptions({
+      deploy: 'lineEarth',
+    })
+  }
   return (
     <div className={styles.container}>
       <div id='container'></div>
+      <button
+        style={{
+          position: 'absolute',
+          top: '20%',
+          right: '20%',
+          zIndex: 1,
+          cursor: 'pointer',
+        }}
+        onClick={onChange}
+      >切换</button>
     </div>
   )
 }

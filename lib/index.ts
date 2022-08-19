@@ -11,6 +11,7 @@ import WavePoint from './Core/WavePoint';
 
 export * from './Core/interface';
 export * from './Core/utils';
+export * from './Use';
 export {
   BaseLayer,
   Earth,

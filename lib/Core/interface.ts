@@ -39,6 +39,7 @@ export interface ISceneInstence {
   showAxes?: boolean;
   isRotate?: boolean;
   isRaycaster?: boolean;
+  load?: boolean;
 }
 
 export type Axes = '3d' | '2d';
@@ -70,7 +71,8 @@ export interface IData {
 export type IFeature = IData[];
 
 export interface IEarth extends ILayer {
-  changeType?: (s: EarthType) => void;
+  changeType: (s: EarthType) => void;
+  changeOptions: (o: IEarthInstance) => void;
 }
 
 export type EarthType =

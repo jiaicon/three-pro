@@ -1,4 +1,5 @@
 import ResizeObserver from 'resize-observer-polyfill';
+import TWEEN from '@tweenjs/tween.js';
 import {
   AmbientLight,
   AxesHelper,
@@ -32,6 +33,7 @@ class SceneLyer extends Event implements IScene {
   public raycaster?: Raycaster;
   mouse: Vector2;
   mousePosition: Vector2;
+  load?: boolean;
 
   group: Group;
   private requestId?: number;
@@ -50,6 +52,7 @@ class SceneLyer extends Event implements IScene {
     // 是否显示坐标系
     this.showAxes = setDefaultValue(showAxes, false);
     this.isRotate = setDefaultValue(options.isRotate, false);
+    this.load = setDefaultValue(options.load, false);
 
     // three的容器
     this.container = document.getElementById(id) as HTMLElement;
@@ -80,8 +83,26 @@ class SceneLyer extends Event implements IScene {
     }
     // 监听dom变化
     this.resize();
-
+    // 加载动画
+    this.loaded();
     this.animate();
+  }
+  loaded() {
+    if (this.load && this.group) {
+      this.group.scale.set(0.1, 0.1, 0.1);
+
+      const tween = new TWEEN.Tween(this.group.scale);
+      tween.to(
+        {
+          x: 1,
+          y: 1,
+          z: 1,
+        },
+        1000,
+      );
+      tween.easing(TWEEN.Easing.Exponential.In);
+      tween.start();
+    }
   }
   initRenderer() {
     this.container.setAttribute(
@@ -225,6 +246,7 @@ class SceneLyer extends Event implements IScene {
     if (this.isRotate && this.scene) {
       this.scene.rotation.y -= 0.0005;
     }
+    TWEEN.update();
     this.render();
     if (this.camera && this.raycaster) {
       this.raycaster.setFromCamera(this.mouse, this.camera);

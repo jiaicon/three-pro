@@ -77,16 +77,6 @@ class EarthLayer extends BaseLayer implements IEarth {
       name: LayerType.EARTH,
     });
 
-    this.color = setDefaultValue(options.color, 0xffffff);
-    this.cloud = setDefaultValue(options.cloud, true);
-    this.impact = setDefaultValue(options.impact, false);
-    this.arround = setDefaultValue(options.arround, false);
-    this.load = setDefaultValue(options.load, true);
-    this._rotate = this.rotate = setDefaultValue(options.rotate, true);
-    this.deploy = setDefaultValue(options.deploy, 'earth');
-    this.earthType = setDefaultValue(options.type, 'point');
-    this.scene = setDefaultValue(options.scene, undefined);
-
     this.vertices0 = new Float32BufferAttribute([], 3);
     this.vertices1 = new Float32BufferAttribute([], 3);
 
@@ -100,6 +90,12 @@ class EarthLayer extends BaseLayer implements IEarth {
     this.cloudMesh = null;
     this.arroundMesh = null;
 
+    // 保存地球的所有物体
+    this.mesh = new Group();
+    this.mesh.name = 'earthGroup';
+
+    this.setOptions(options);
+
     this.category = [
       'extrudeEarth',
       'jueJinEarth',
@@ -111,10 +107,6 @@ class EarthLayer extends BaseLayer implements IEarth {
     this.init();
   }
   init() {
-    // 保存地球的所有物体
-    this.mesh = new Group();
-    this.mesh.name = 'earthGroup';
-
     // // 平面3D图
     // this.extrudeEarth = this.initExtrudeEarth();
     // this.mesh.add(this.extrudeEarth);
@@ -497,13 +489,13 @@ class EarthLayer extends BaseLayer implements IEarth {
     if (isColor) {
       return this.deploy === 'pointEarth'
         ? {
-            colors: new Float32BufferAttribute(colors, 3),
-            vertices: new Float32BufferAttribute(pxyz_arr1, 3),
-          }
+          colors: new Float32BufferAttribute(colors, 3),
+          vertices: new Float32BufferAttribute(pxyz_arr1, 3),
+        }
         : {
-            colors: new Float32BufferAttribute(colors, 3),
-            vertices: new Float32BufferAttribute(pxyz_arr0, 3),
-          };
+          colors: new Float32BufferAttribute(colors, 3),
+          vertices: new Float32BufferAttribute(pxyz_arr0, 3),
+        };
     }
     return this.deploy === 'pointEarth'
       ? new Float32BufferAttribute(pxyz_arr1, 3)
@@ -596,6 +588,32 @@ class EarthLayer extends BaseLayer implements IEarth {
       cancelAnimationFrame(this.requestId);
       this.requestId = undefined;
     }
+  }
+  clear() {
+    this.mesh?.remove(...this.mesh.children);
+    this.earthMesh = null;
+    this.extrudeEarth = null;
+    this.jueJinEarth = null;
+    this.pointEarth = null;
+    this.lineEarth = null;
+  }
+  private setOptions(options: IEarthInstance) {
+    this.cancelAnimate();
+    this.clear();
+
+    this.color = setDefaultValue(options.color, 0xffffff);
+    this.cloud = setDefaultValue(options.cloud, true);
+    this.impact = setDefaultValue(options.impact, false);
+    this.arround = setDefaultValue(options.arround, false);
+    this.load = setDefaultValue(options.load, true);
+    this._rotate = this.rotate = setDefaultValue(options.rotate, true);
+    this.deploy = setDefaultValue(options.deploy, 'earth');
+    this.earthType = setDefaultValue(options.type, 'point');
+    this.scene = setDefaultValue(options.scene, undefined);
+  }
+  changeOptions(options: IEarthInstance) {
+    this.setOptions(options);
+    this.init();
   }
 }
 
