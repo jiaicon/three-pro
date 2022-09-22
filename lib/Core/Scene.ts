@@ -152,8 +152,7 @@ class SceneLyer extends Event implements IScene {
       MIDDLE: MOUSE.DOLLY,
       RIGHT: MOUSE.PAN,
     };
-    this.orbitControls.enablePan = false;
-    this.orbitControls.enableDamping = false;
+    this.orbitControls.enableDamping = true;
     this.orbitControls.zoomSpeed = 1;
     this.renderer?.clear();
   }
@@ -195,7 +194,13 @@ class SceneLyer extends Event implements IScene {
 
     const cssDom = this.css3Render.domElement;
     cssDom.classList.add('css3Renderer');
-
+    cssDom.setAttribute('style', `
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+  `)
     this.container.appendChild(cssDom);
     // @ts-ignore
     this.fire('dom.loaded');
