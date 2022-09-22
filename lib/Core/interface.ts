@@ -27,6 +27,7 @@ export interface IScene extends IEvent {
   scene?: Scene;
   group?: Group;
   camera?: Camera;
+  mouse?: Vector2;
   mousePosition?: Vector2;
   raycaster?: Raycaster;
   orbitControls?: OrbitControls;

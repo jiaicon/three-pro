@@ -26,6 +26,7 @@ class HeatMap extends BaseLayer implements IHeatmap {
   fillColor?: (d: any) => string;
   lastPick?: Intersection; // 记录鼠标上次选中的区域
   private requestId: number;
+  lastMouse?: Vector2;
   tootip: (mouse: Vector2, d: any) => void;
   constructor(options: IHeatmapInstance) {
     super({
@@ -38,6 +39,7 @@ class HeatMap extends BaseLayer implements IHeatmap {
     this.fillColor = setDefaultValue(options.fillColor, '#F4D3A4');
     this.tootip = setDefaultValue(options.tootip, undefined);
     this.requestId = 0;
+    this.lastMouse = cloneDeep(this.scene?.mouse);
     this.init();
   }
   init() {
@@ -162,7 +164,13 @@ class HeatMap extends BaseLayer implements IHeatmap {
     cancelAnimationFrame(this.requestId);
   }
   animate() {
-    if (this.scene?.raycaster && this.mesh) {
+    if (
+      this.scene?.raycaster &&
+      this.mesh &&
+      (this.lastMouse?.x !== this.scene?.mouse?.x ||
+        this.lastMouse?.y !== this.scene?.mouse?.y)
+    ) {
+      this.lastMouse = cloneDeep(this.scene.mouse);
       const raycaster = this.scene.raycaster;
       const intersects = raycaster.intersectObjects(this.mesh.children, true);
       const thisPick = intersects.find(
@@ -176,6 +184,7 @@ class HeatMap extends BaseLayer implements IHeatmap {
           );
         }
         // 恢复上一次清空的
+        this.lastPick.object.position.set(0, 0, 0);
         // @ts-ignore
         const _material = this.lastPick.object._material;
         // @ts-ignore
@@ -192,6 +201,7 @@ class HeatMap extends BaseLayer implements IHeatmap {
           thisPick?.object?.parent?.userData.properties,
         );
         this.lastPick = thisPick;
+        this.lastPick.object.position.set(0, 0, 0.3);
         // @ts-ignore
         this.lastPick.object._material = _material;
         // @ts-ignore

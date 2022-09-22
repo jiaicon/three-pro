@@ -1,5 +1,4 @@
 import ResizeObserver from 'resize-observer-polyfill';
-import TWEEN from '@tweenjs/tween.js';
 import {
   AmbientLight,
   AxesHelper,
@@ -33,7 +32,6 @@ class SceneLyer extends Event implements IScene {
   public raycaster?: Raycaster;
   mouse: Vector2;
   mousePosition: Vector2;
-  load?: boolean;
 
   group: Group;
   private requestId?: number;
@@ -52,14 +50,13 @@ class SceneLyer extends Event implements IScene {
     // 是否显示坐标系
     this.showAxes = setDefaultValue(showAxes, false);
     this.isRotate = setDefaultValue(options.isRotate, false);
-    this.load = setDefaultValue(options.load, false);
 
     // three的容器
     this.container = document.getElementById(id) as HTMLElement;
     // 物体容器
     this.group = new Group();
-    this.mouse = new Vector2(); // 不能设置成[0, 0]，初始化时会操作到
-    this.mousePosition = new Vector2(-10000, -10000); // 不能设置成[0, 0]，初始化时会操作到
+    this.mouse = new Vector2(10000, 10000); // 不能设置成[0, 0]，初始化时会操作到
+    this.mousePosition = new Vector2(10000, 10000); // 不能设置成[0, 0]，初始化时会操作到
     this.isRaycaster = setDefaultValue(options.isRaycaster, false);
 
     this.init();
@@ -83,26 +80,8 @@ class SceneLyer extends Event implements IScene {
     }
     // 监听dom变化
     this.resize();
-    // 加载动画
-    this.loaded();
-    this.animate();
-  }
-  loaded() {
-    if (this.load && this.group) {
-      this.group.scale.set(0.1, 0.1, 0.1);
 
-      const tween = new TWEEN.Tween(this.group.scale);
-      tween.to(
-        {
-          x: 1,
-          y: 1,
-          z: 1,
-        },
-        1000,
-      );
-      tween.easing(TWEEN.Easing.Exponential.In);
-      tween.start();
-    }
+    this.animate();
   }
   initRenderer() {
     this.container.setAttribute(
@@ -169,25 +148,41 @@ class SceneLyer extends Event implements IScene {
       this.renderer?.domElement,
     );
     this.orbitControls.mouseButtons = {
-      LEFT: MOUSE.PAN,
+      LEFT: MOUSE.ROTATE,
       MIDDLE: MOUSE.DOLLY,
-      RIGHT: MOUSE.ROTATE,
+      RIGHT: MOUSE.PAN,
     };
-    this.orbitControls.enableDamping = true;
+    this.orbitControls.enablePan = false;
+    this.orbitControls.enableDamping = false;
     this.orbitControls.zoomSpeed = 1;
     this.renderer?.clear();
   }
 
+  onMouseMove(event: MouseEvent) {
+    // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
+    this.mouse.x = (event.offsetX / this.container.offsetWidth) * 2 - 1;
+    this.mouse.y = -(event.offsetY / this.container.offsetHeight) * 2 + 1;
+    this.mousePosition.x = event.offsetX;
+    this.mousePosition.y = event.offsetY;
+  }
+
+  onMouseScroll() {
+    this.mouse.set(10000, 10000);
+  }
+
   initRaycaster() {
     this.raycaster = new Raycaster();
-    const onMouseMove = (event: MouseEvent) => {
-      // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
-      this.mouse.x = (event.offsetX / this.container.offsetWidth) * 2 - 1;
-      this.mouse.y = -(event.offsetY / this.container.offsetHeight) * 2 + 1;
-      this.mousePosition.x = event.offsetX;
-      this.mousePosition.y = event.offsetY;
-    };
-    this.container.addEventListener('mousedown', onMouseMove, false);
+    this.container.addEventListener(
+      'mousedown',
+      this.onMouseMove.bind(this),
+      false,
+    );
+    // 监听鼠标滚动，移走鼠标，不然会对射线有影响，主要是热力图
+    this.container.addEventListener(
+      'wheel',
+      this.onMouseScroll.bind(this),
+      false,
+    );
   }
 
   initCSS3Render() {
@@ -200,15 +195,10 @@ class SceneLyer extends Event implements IScene {
 
     const cssDom = this.css3Render.domElement;
     cssDom.classList.add('css3Renderer');
-    cssDom.setAttribute('style', `
-      position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      overflow: hidden;
-    `)
 
     this.container.appendChild(cssDom);
+    // @ts-ignore
+    this.fire('dom.loaded');
   }
 
   removeCSS3DDom() {
@@ -246,7 +236,6 @@ class SceneLyer extends Event implements IScene {
     if (this.isRotate && this.scene) {
       this.scene.rotation.y -= 0.0005;
     }
-    TWEEN.update();
     this.render();
     if (this.camera && this.raycaster) {
       this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -264,7 +253,7 @@ class SceneLyer extends Event implements IScene {
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
         clearTimeout(this.timer);
-        this.timer = window.setTimeout(() => {
+        this.timer = setTimeout(() => {
           const { clientWidth, clientHeight } = entry.target;
 
           (this.camera as PerspectiveCamera).aspect =
@@ -284,6 +273,12 @@ class SceneLyer extends Event implements IScene {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
     }
+    this.container.removeEventListener(
+      'mousedown',
+      this.onMouseScroll.bind(this),
+    );
+    this.container.removeEventListener('wheel', this.onMouseScroll.bind(this));
+
     this.scene?.clear();
     this.renderer?.clear();
     this.renderer?.dispose();
